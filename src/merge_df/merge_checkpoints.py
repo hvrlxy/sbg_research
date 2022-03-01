@@ -2,8 +2,8 @@ import pandas as pd
 import numpy as np
 
 #read csv file
-checkpoint_df = pd.read_csv("../../clean_datasets/csv_file/checkpoints.csv")
-grade_df = pd.read_csv("../../clean_datasets/csv_file/grades.csv")
+checkpoint_df = pd.read_csv("https://github.com/hvrlxy/hvrlxy.github.io/tree/main/assets/datasets/sbg_csv/checkpoints.csv")
+grade_df = pd.read_csv("https://github.com/hvrlxy/hvrlxy.github.io/tree/main/assets/datasets/sbg_csv/grades.csv")
 checkpoint_df = checkpoint_df.drop(columns=['Unnamed: 0'])
 grade_df = grade_df.drop(columns=['Unnamed: 0'])
 
@@ -75,9 +75,6 @@ for ID in student_list:
 
 merge_checkpoint_df = pd.DataFrame(col_values, columns=columns)
 merge_checkpoint_df['ID'] = merge_checkpoint_df['ID'].astype(np.int64)
-
-# print(calculate_total_checkpoint_time(65544, 1))
-# print(merge_checkpoint_df)
 
 merge_checkpoint_df.to_csv("../../clean_datasets/csv_file/merge_checkpoints.csv")
 merge_checkpoint_df.to_excel("../../clean_datasets/excel_file/merge_checkpoints.xlsx", index=False)
