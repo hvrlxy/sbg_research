@@ -4,9 +4,9 @@ import calmap
 
 class HeatMap:
 	def __init__(self):
-		self.checkpoint_df = pd.read_csv("../../clean_datasets/csv_file/checkpoints.csv")
-		self.revision_df = pd.read_csv("../../clean_datasets/csv_file/revisions.csv")
-		self.grade_df = pd.read_csv("../../clean_datasets/csv_file/grades.csv")
+		self.checkpoint_df = pd.read_csv("https://hvrlxy.github.io/assets/datasets/sbg_csv/checkpoints.csv")
+		self.revision_df = pd.read_csv("https://hvrlxy.github.io/assets/datasets/sbg_csv/revisions.csv")
+		self.grade_df = pd.read_csv("https://hvrlxy.github.io/assets/datasets/sbg_csv/grades.csv")
 
 
 		self.checkpoint_df = self.checkpoint_df.drop(columns=['Unnamed: 0'])
