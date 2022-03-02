@@ -64,7 +64,8 @@ class Vectorize:
 
 		for i in range(len(calendar)):
 			vector[i] = self.find_num_activity(student_act, calendar[i])
-
+		if len(vector) < 14:
+			vector.append(None)
 		return vector
 
 	def get_student_grade(self, student_id):
