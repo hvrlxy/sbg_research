@@ -67,13 +67,20 @@ class Vectorize:
 
 		return vector
 
+	def get_student_grade(self, student_id):
+		student_grade = 'F'
+		if len(self.grade_df.loc[self.grade_df['ID'] == student_id]['grade']) > 0:
+			student_grade = list(self.grade_df.loc[self.grade_df['ID'] == student_id]['grade'])[0]
+		return student_grade[0]
+
 	def export_csv(self, path):
 		df_rows= []
 		for ID in self.student_list:
-			df_rows.append([ID] + self.activity_vector(ID))
+			df_rows.append([ID] + self.activity_vector(ID) + [self.get_student_grade(ID)])
 		columns = ['ID']
 		for i in range(1,15):
 			columns.append('week ' + str(i))
+		columns.append('grade')
 		activity_df = pd.DataFrame(df_rows, columns=columns)
 		activity_df.to_csv(path)
 
