@@ -2,14 +2,14 @@ import pandas as pd
 import numpy as np
 
 #read csv file
-checkpoint_df = pd.read_csv("https://github.com/hvrlxy/hvrlxy.github.io/tree/main/assets/datasets/sbg_csv/checkpoints.csv")
-grade_df = pd.read_csv("https://github.com/hvrlxy/hvrlxy.github.io/tree/main/assets/datasets/sbg_csv/grades.csv")
+checkpoint_df = pd.read_csv("https://hvrlxy.github.io/assets/datasets/sbg_csv/checkpoints.csv")
+grade_df = pd.read_csv("https://hvrlxy.github.io/assets/datasets/sbg_csv/grades.csv")
 checkpoint_df = checkpoint_df.drop(columns=['Unnamed: 0'])
 grade_df = grade_df.drop(columns=['Unnamed: 0'])
 
 #clean the start date of each checkpoints, so - become None
 checkpoint_df.loc[checkpoint_df['started'] == '-', 'started'] = None
-checkpoint_df.loc[checkpoint_df['checkpoints'] == '-', 'checkpoints'] = 0
+checkpoint_df.loc[checkpoint_df['checkpoints'] == '-', 'checkpoints'] = -1
 
 #change started column into datetime
 checkpoint_df['started']= pd.to_datetime(checkpoint_df['started'])
@@ -76,5 +76,5 @@ for ID in student_list:
 merge_checkpoint_df = pd.DataFrame(col_values, columns=columns)
 merge_checkpoint_df['ID'] = merge_checkpoint_df['ID'].astype(np.int64)
 
-merge_checkpoint_df.to_csv("../../clean_datasets/csv_file/merge_checkpoints.csv")
+merge_checkpoint_df.to_csv("../../../hale.github.io/assets/datasets/sbg_csv/merge_checkpoints.csv")
 merge_checkpoint_df.to_excel("../../clean_datasets/excel_file/merge_checkpoints.xlsx", index=False)

@@ -31,11 +31,15 @@ class Vectorize:
 	def get_student_activity(self, student_id: int):
 		checkpoint_timestamp = self.checkpoint_df.loc[self.checkpoint_df['ID'] == student_id]
 		revision_timestamp = self.revision_df.loc[self.revision_df['ID'] == student_id]
+		officehour_timestamp = self.revision_df.loc[self.revision_df['ID'] == student_id].loc[self.revision_df['office_hours'] == 'Yes']
 
 		checkpoint_timestamp = checkpoint_timestamp['started']
 		revision_timestamp = revision_timestamp['timestamp']
+		officehour_timestamp = officehour_timestamp['timestamp']
 
 		timestamps = checkpoint_timestamp.append(revision_timestamp)
+		timestamps = timestamps.append(officehour_timestamp)
+		timestamps = timestamps.append(officehour_timestamp)
 		return timestamps.dropna()
 
 	def get_calendar(self, student_id):
@@ -51,7 +55,6 @@ class Vectorize:
 		num_act = 0
 		for timestamp in student_act:
 			if (week - timestamp).days <= 7 and (week - timestamp).days >= 0:
-				# print('start timestamp:', week, 'current timestamp:', timestamp, 'time_different:', (week - timestamp).days)
 				num_act +=1
 		return num_act
 
@@ -60,7 +63,7 @@ class Vectorize:
 		# print(student_act)
 		calendar = self.get_calendar(student_id)
 		# print(len(calendar))
-		vector = [None for i in range(14)]
+		vector = ['-' for i in range(14)]
 
 		for i in range(len(calendar)):
 			vector[i] = self.find_num_activity(student_act, calendar[i])
