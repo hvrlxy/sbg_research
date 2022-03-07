@@ -13,11 +13,11 @@ class AUC_reduction:
 				return i, i + 1
 
 	def reduce(self, x):
-		if len(x) != orig_components:
+		if len(x) != self.orig_components:
 			return None 
 		ys = [i for i in range(self.orig_components)]
 		reduced_ys = [i for i in range (self.n_components)]
-		reduced_ys = [i * n_components/orig_components for i in reduced_ys]
+		reduced_ys = [i * self.n_components/self.orig_components for i in reduced_ys]
 
 		reduced_xs = []
 
