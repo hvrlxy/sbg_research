@@ -12,7 +12,16 @@ checkpoint_df = checkpoint_df.drop(columns=['Unnamed: 0', 'time taken'])
 checkpoint_df = checkpoint_df.loc[checkpoint_df['started'] != '-']
 checkpoint_df['started'] = pd.to_datetime(checkpoint_df['started'])
 
+def add_microsecond(x: str):
+	if '.' not in x:
+		return x + '.00'
+	else:
+		return x
+
 checkpoint_df['checkpoints'] = checkpoint_df['checkpoints'].dropna()
+revision_df['timestamp'] = revision_df['timestamp'].apply(lambda x: add_microsecond(x))
+# print(revision_df['timestamp'])
+revision_df['timestamp'] = revision_df['timestamp'].apply(lambda x: datetime.strptime(x, '%Y-%m-%d %H:%M:%S.%f'))
 
 background_df = background_df.drop(columns=['Unnamed: 0'])
 
@@ -43,17 +52,20 @@ def find_checkpoint(current_date, is_spring = True):
 
 	return [current_date, is_spring]
 
-student_dict = {student_id: {'total_completed': 0, 'attempt': {i: 0 for i in range(1,25)}, 'office_hours': {i: 0 for i in range(1,25)}, 'checkpoint_complete': {i: False for i in range(1,25)} } for student_id in student_list}
+student_dict = {student_id: {'total_completed': 0, 'attempt': {i: 0 for i in range(1,25)}, 'office_hours': 0, 'checkpoint_complete': {i: False for i in range(1,25)} } for student_id in student_list}
 
 df_values = []
 
 def find_office_hours(student_id: int, checkpoint_no: int, no_attempt: int, current_date):
 	# need to fill in later
-	student_revision_df = revision_df.loc[revision_df['ID'] == student_id].loc[revision_df['checkpoint'] == checkpoint_no]
+	student_revision_df = revision_df.loc[revision_df['ID'] == student_id].loc[revision_df['office_hours'] != 'No']
+	# print(revision_df['office_hours'])
 	if len(student_revision_df) == 0:
 		return 0
-	office_hours_lst = list(student_revision_df['office_hours'])[:max((no_attempt-1), 0)]
-	return len([x for x in office_hours_lst if x == 'Yes'])
+	office_hours_lst = list(student_revision_df['timestamp'])
+	return len([x for x in office_hours_lst if x < current_date])
+
+
 
 def find_background_info(student_id: int):
 	#need to fill in later
@@ -75,11 +87,12 @@ def find_avg_attempt(student_id):
 			total_time += student_dict[student_id]['attempt'][i]
 
 	if total_checkpoint_complete == 0:
-		return 1000 #return a large number
+		return -1 #return a large number
 	else:
 		return total_time/total_checkpoint_complete
 
 for i in checkpoint_df.index:
+	# print('still running')
 	is_spring = not checkpoint_df['semester'][i] == 'Fa21 - 002'
 
 	student_id = checkpoint_df['ID'][i]
@@ -88,27 +101,25 @@ for i in checkpoint_df.index:
 	checkpoint_no = checkpoint_df['checkpoints'][i]
 	is_passed = checkpoint_df['grade'][i] == 1
 
-	if is_passed:
+	no_attempt = student_dict[student_id]['attempt'][checkpoint_no]
+	student_dict[student_id]['attempt'][checkpoint_no] += 1
+	student_dict[student_id]['office_hours'] = find_office_hours(student_id, checkpoint_no, no_attempt, current_date)
+
+	office_hours = student_dict[student_id]['office_hours']
+	percentage_checkpoint = min(1, student_dict[student_id]['total_completed'] / find_checkpoint(current_date, is_spring))
+	# if percentage_checkpoint > 1.0:
+	# 	print(student_dict[student_id]['total_completed'], find_checkpoint(current_date, is_spring))
+	print(percentage_checkpoint, no_attempt, current_date, checkpoint_no, student_dict[student_id]['total_completed'], find_checkpoint(current_date, is_spring))
+	duration, confidence, year = find_background_info(student_id)
+
+	if is_passed and not student_dict[student_id]['checkpoint_complete'][checkpoint_no]:
 		student_dict[student_id]['total_completed'] += 1
 		student_dict[student_id]['checkpoint_complete'][checkpoint_no] = True
 
-	no_attempt = student_dict[student_id]['attempt'][checkpoint_no]
-	student_dict[student_id]['attempt'][checkpoint_no] += 1
-	student_dict[student_id]['office_hours'][checkpoint_no] = find_office_hours(student_id, checkpoint_no, no_attempt, current_date)
-
-	office_hours = student_dict[student_id]['office_hours'][checkpoint_no]
-	
-	percentage_checkpoint = student_dict[student_id]['total_completed'] / find_checkpoint(current_date, is_spring)
-	# print(percentage_checkpoint)
-	duration, confidence, year = find_background_info(student_id)
-
-	df_values.append([student_id, checkpoint_no, duration, confidence, year, percentage_checkpoint, no_attempt, average_attempt, office_hours, is_passed])
+	df_values.append([student_id, checkpoint_no, duration, confidence, year, percentage_checkpoint, no_attempt, average_attempt, office_hours, int(is_passed)])
 
 final_df = pd.DataFrame(df_values, columns=['student_id', 'checkpoint_no', 'duration', 'confidence', 'year', 'percentage_checkpoint', 'no_attempt', 'average_attempt', 'office_hours', 'is_passed'])
 final_df.to_csv('../../../hale.github.io/assets/datasets/sbg_csv/attempts.csv')
-
-
-
 		
 
 

@@ -25,6 +25,7 @@ class AUC_reduction:
 			y1, y2 = self.find_ys(reduced_ys[i], ys)
 
 			slope = (x[y1] - x[y2])/(ys[y1] - ys[y2])
+			print(slope)
 			new_x = slope * reduced_ys[i] + x[y1]
 
 			reduced_xs.append(new_x)
