@@ -12,6 +12,7 @@ columns = ['Term', 'firstname', 'surname', 'Gustavus ID',
 
 survey_df = pd.read_csv(path)
 survey_df.columns = columns
+print(len(survey_df))
 
 #clean up some of the column
 survey_df['fullname'] = survey_df['surname'].apply(lambda x: x.capitalize()) + ' ' + survey_df['firstname'].apply(lambda x: x.capitalize())
@@ -25,8 +26,7 @@ survey_df['class'] = survey_df['class'].apply(lambda x: 4 if x == 'Fourth-year a
 survey_df['ID'] = survey_df["fullname"].apply(lambda x: get_ids(name=x))
 survey_df = survey_df.drop(columns=['Unnamed: 9', 'firstname', 'surname', 'Gustavus ID', 'fullname'])
 
-#test print
-# print(survey_df.head(30))
-survey_df = survey_df.dropna(subset=['ID'])
+#test printsurvey_df = survey_df.dropna(subset=['ID'])
 survey_df.to_csv("../../../hale.github.io/assets/datasets/sbg_csv/cleaned_survey.csv")
-print(survey_df.head(30))
+print(survey_df.head(5))
+print(len(survey_df))
